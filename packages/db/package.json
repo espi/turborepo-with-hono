@@ -16,14 +16,12 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@libsql/client": "^0.17.0",
-    "better-sqlite3": "^11.7.0",
+    "@neondatabase/serverless": "^1.0.2",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.44.2"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@types/better-sqlite3": "^7.6.12",
     "@types/node": "^20.11.17",
     "dotenv-cli": "^11.0.0",
     "drizzle-kit": "^0.30.1",

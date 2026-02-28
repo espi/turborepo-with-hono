@@ -1,35 +1,15 @@
 import { config } from 'dotenv'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { drizzle } from 'drizzle-orm/neon-http'
 import * as schema from './schema.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 config({ path: path.resolve(__dirname, '../../../.env') })
-config() // also load cwd .env (e.g. apps/api/.env)
+config()
 
 const databaseUrl = process.env.DATABASE_URL
-const isRemote =
-  databaseUrl?.startsWith('libsql://') || databaseUrl?.startsWith('https://')
+if (!databaseUrl) throw new Error('DATABASE_URL is required')
 
-let db
-
-if (isRemote && databaseUrl) {
-  const { drizzle } = await import('drizzle-orm/libsql')
-  db = drizzle({
-    connection: {
-      url: databaseUrl,
-      authToken: process.env.TURSO_AUTH_TOKEN ?? process.env.DATABASE_AUTH_TOKEN,
-    },
-    schema,
-  })
-} else {
-  const { drizzle } = await import('drizzle-orm/better-sqlite3')
-  const Database = (await import('better-sqlite3')).default
-  const defaultPath = path.resolve(__dirname, '..', 'local.db')
-  const filePath = databaseUrl?.replace(/^file:/, '') ?? defaultPath
-  const client = new Database(filePath)
-  db = drizzle(client, { schema })
-}
-
-export { db }
+export const db = drizzle(databaseUrl, { schema })
 export * from './schema.js'
