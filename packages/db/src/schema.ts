@@ -5,3 +5,9 @@ export const usersTable = sqliteTable('users', {
   name: text('name').notNull(),
   email: text('email').notNull().unique(),
 })
+
+export const todosTable = sqliteTable('todos', {
+  id: int('id').primaryKey({ autoIncrement: true }),
+  title: text('title').notNull(),
+  completed: int('completed', { mode: 'boolean' }).default(false),
+})

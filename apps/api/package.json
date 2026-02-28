@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "dev": "srvx",
+    "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js"
   },
   "dependencies": {
@@ -11,11 +11,13 @@
     "@repo/constants": "workspace:*",
     "@repo/db": "workspace:*",
     "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.44.2",
     "hono": "^4.8.10"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
     "srvx": "^0.8.7",
+    "tsx": "^4.19.2",
     "typescript": "^5.8.3"
   }
 }
