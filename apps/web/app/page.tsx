@@ -5,9 +5,18 @@ const API_URL = process.env.VERCEL
   ? 'https://hono-turborepo-api-demo.vercel.app'
   : 'http://localhost:3000'
 
-export default function Home() {
+export default async function Home() {
+  const homepageMessage = await fetch(API_URL)
+    .then((res) => res.text())
+    .catch(() => null)
+
   return (
     <div className={styles.page}>
+      {homepageMessage && (
+        <p className={styles.result} style={{ marginBottom: 16 }}>
+          {homepageMessage}
+        </p>
+      )}
       <TodoClient apiUrl={API_URL} />
       <footer className={styles.footer}>
         <a
