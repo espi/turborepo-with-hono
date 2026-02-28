@@ -1,14 +1,19 @@
 import styles from './page.module.css'
 import { TodoClient } from './components/TodoClient'
 
-const API_URL = process.env.VERCEL
-  ? 'https://hono-turborepo-api-demo.vercel.app'
-  : 'http://localhost:3000'
+const API_URL = (
+  process.env.NEXT_PUBLIC_API_URL ??
+  (process.env.VERCEL ? '' : 'http://localhost:3000')
+)
+  .trim()
+  .replace(/\/$/, '') // remove trailing slash to avoid // when appending paths
 
 export default async function Home() {
-  const homepageMessage = await fetch(API_URL)
-    .then((res) => res.text())
-    .catch(() => null)
+  const homepageMessage = API_URL
+    ? await fetch(API_URL)
+        .then((res) => res.text())
+        .catch(() => null)
+    : null
 
   return (
     <div className={styles.page}>
@@ -17,7 +22,14 @@ export default async function Home() {
           {homepageMessage}
         </p>
       )}
-      <TodoClient apiUrl={API_URL} />
+      {API_URL ? (
+        <TodoClient apiUrl={API_URL} />
+      ) : (
+        <p style={{ color: 'var(--color-muted)' }}>
+          Set <code>NEXT_PUBLIC_API_URL</code> in your Vercel project to connect
+          to the API.
+        </p>
+      )}
       <footer className={styles.footer}>
         <a
           href="https://turborepo.com?utm_source=create-turbo"
