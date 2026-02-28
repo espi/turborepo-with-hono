@@ -3,11 +3,15 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "dev": "srvx"
+    "dev": "srvx",
+    "start": "node dist/index.js"
   },
   "dependencies": {
-    "hono": "^4.8.10",
-    "@repo/constants": "workspace:*"
+    "@hono/node-server": "^1.19.9",
+    "@repo/constants": "workspace:*",
+    "@repo/db": "workspace:*",
+    "dotenv": "^16.4.7",
+    "hono": "^4.8.10"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
