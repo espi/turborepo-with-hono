@@ -101,5 +101,8 @@ app.delete('/todos/:id', async (c) => {
   return c.json({ ok: true })
 })
 
-serve(app)
 export default app
+
+if (!process.env.VERCEL) {
+  serve(app)
+}
