@@ -3,9 +3,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import styles from '../page.module.css'
 
+export type TodoType = 'work' | 'personal'
+
 type Todo = {
   id: number
   title: string
+  type?: TodoType
   completed: boolean
 }
 
@@ -13,6 +16,7 @@ export function TodoClient({ apiUrl }: { apiUrl: string }) {
   const [todos, setTodos] = useState<Todo[]>([])
   const [loading, setLoading] = useState(true)
   const [inputValue, setInputValue] = useState('')
+  const [todoType, setTodoType] = useState<TodoType>('personal')
 
   const fetchTodos = useCallback(async () => {
     const res = await fetch(`${apiUrl}/todos`)
@@ -30,7 +34,7 @@ export function TodoClient({ apiUrl }: { apiUrl: string }) {
     const res = await fetch(`${apiUrl}/todos`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: inputValue.trim() }),
+      body: JSON.stringify({ title: inputValue.trim(), type: todoType }),
     })
     if (!res.ok) {
       const err = await res.json().catch(() => ({ error: res.statusText }))
@@ -58,7 +62,7 @@ export function TodoClient({ apiUrl }: { apiUrl: string }) {
   return (
     <div className={styles.main}>
       <h1>Todos</h1>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
         <input
           type="text"
           value={inputValue}
@@ -66,12 +70,28 @@ export function TodoClient({ apiUrl }: { apiUrl: string }) {
           placeholder="Add a todo..."
           style={{
             flex: 1,
+            minWidth: 120,
             padding: '8px 12px',
             borderRadius: 8,
             border: '1px solid rgba(var(--gray-rgb), 0.2)',
             fontFamily: 'var(--font-geist-sans)',
           }}
         />
+        <select
+          value={todoType}
+          onChange={(e) => setTodoType(e.target.value as TodoType)}
+          style={{
+            padding: '8px 12px',
+            borderRadius: 8,
+            border: '1px solid rgba(var(--gray-rgb), 0.2)',
+            fontFamily: 'var(--font-geist-sans)',
+            background: 'var(--background)',
+            color: 'var(--foreground)',
+          }}
+        >
+          <option value="personal">Personal</option>
+          <option value="work">Work</option>
+        </select>
         <button
           type="submit"
           style={{
@@ -118,6 +138,16 @@ export function TodoClient({ apiUrl }: { apiUrl: string }) {
                   }}
                 >
                   {todo.title}
+                  <span
+                    style={{
+                      marginLeft: 8,
+                      fontSize: 12,
+                      opacity: 0.7,
+                      textTransform: 'capitalize',
+                    }}
+                  >
+                    ({todo.type ?? 'personal'})
+                  </span>
                 </span>
                 <button
                   type="button"

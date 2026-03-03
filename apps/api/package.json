@@ -3,8 +3,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "dev": "tsx watch src/index.ts",
-    "start": "node dist/index.js"
+    "dev": "dotenv -e ../../.env -- tsx watch src/index.ts",
+    "start": "dotenv -e ../../.env -- node dist/index.js"
   },
   "dependencies": {
     "@effect/schema": "^0.75.5",
@@ -12,13 +12,13 @@
     "@hono/node-server": "^1.19.9",
     "@repo/constants": "workspace:*",
     "@repo/db": "workspace:*",
-    "dotenv": "^16.4.7",
     "drizzle-orm": "^0.44.2",
     "effect": "^3.19.19",
     "hono": "^4.8.10"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
+    "dotenv-cli": "^11.0.0",
     "srvx": "^0.8.7",
     "tsx": "^4.19.2",
     "typescript": "^5.8.3"

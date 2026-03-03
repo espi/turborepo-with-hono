@@ -1,6 +1,3 @@
-import { config } from 'dotenv'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { serve } from '@hono/node-server'
 import { cors } from 'hono/cors'
 import { Hono } from 'hono'
@@ -10,9 +7,6 @@ import { effectValidator } from '@hono/effect-validator'
 import { CONSTANT } from '@repo/constants'
 import { db, todosTable, usersTable } from '@repo/db'
 import { CreateTodoBody, UpdateTodoBody } from './schemas.js'
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-config({ path: path.resolve(__dirname, '../../../.env') })
 
 function parseIdParam(id: string): number | null {
   const n = Number.parseInt(id, 10)
@@ -55,7 +49,8 @@ app.get('/todos', async (c) => {
 app.post('/todos', effectValidator('json', CreateTodoBody), async (c) => {
   const body = c.req.valid('json')
   const program = Effect.tryPromise({
-    try: () => db.insert(todosTable).values({ title: body.title }).returning(),
+    try: () =>
+      db.insert(todosTable).values({ title: body.title, type: body.type }).returning(),
     catch: (e) => new Error(String(e)),
   })
   const result = await Effect.runPromise(program)
@@ -72,11 +67,17 @@ app.patch('/todos/:id', effectValidator('json', UpdateTodoBody), async (c) => {
     return c.json({ error: 'Invalid id' }, 400)
   }
   const body = c.req.valid('json')
+  const updates: { completed?: boolean; type?: 'work' | 'personal' } = {}
+  if (body.completed !== undefined) updates.completed = body.completed
+  if (body.type !== undefined) updates.type = body.type
+  if (Object.keys(updates).length === 0) {
+    return c.json({ error: 'No updates provided' }, 400)
+  }
   const program = Effect.tryPromise({
     try: () =>
       db
         .update(todosTable)
-        .set({ completed: body.completed ?? false })
+        .set(updates as { completed?: boolean; type?: 'work' | 'personal' })
         .where(eq(todosTable.id, id))
         .returning(),
     catch: (e) => new Error(String(e)),
